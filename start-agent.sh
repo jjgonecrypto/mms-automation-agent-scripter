@@ -10,20 +10,24 @@ FILE_EXT="tar.gz"
 mkdir -p ~/mms-agents/automation
 pushd ~/mms-agents/automation
 
-echo -e "\033[0;33mDownloading latest agent\033[0m"
-curl -OL http://mms.mongodb.com/download/agent/automation/mongodb-mms-automation-agent-latest.$AGENT_ENVIRONMENT.$FILE_EXT
+if [ "$1" != "restart" ]
+then
+	echo -e "\033[0;33mDownloading latest agent\033[0m"
+	curl -OL http://mms.mongodb.com/download/agent/automation/mongodb-mms-automation-agent-latest.$AGENT_ENVIRONMENT.$FILE_EXT
 
-#assume tarball and explode into current direction
-echo -e "\033[0;33mExtracting\033[0m"
-tar -xzf ./mongodb-mms-automation-agent-latest.$AGENT_ENVIRONMENT.$FILE_EXT --strip-components 1
+	#assume tarball and explode into current direction
+	echo -e "\033[0;33mExtracting\033[0m"
+	tar -xzf ./mongodb-mms-automation-agent-latest.$AGENT_ENVIRONMENT.$FILE_EXT --strip-components 1
 
-#insert command line args into config file 
-echo -e "\033[0;33mSetting mmsGroupId to \033[0m$1"
-sed -i.bak -E "s/^mmsGroupId.+$/mmsGroupId=$1/" local.config
-echo -e "\033[0;33mSetting mmsApiKey to \033[0m$2"
-sed -i.bak -E "s/^mmsApiKey.+$/mmsApiKey=$2/" local.config
-echo -e "\033[0;33mSetting mmsBaseUrl to \033[0m$3"
-sed -i.bak -E "s/^mmsBaseUrl.+$/mmsBaseUrl=$(echo $3 | sed -E 's/\//\\\//g')/" local.config
+	#insert command line args into config file 
+	echo -e "\033[0;33mSetting mmsGroupId to \033[0m$1"
+	sed -i.bak -E "s/^mmsGroupId.+$/mmsGroupId=$1/" local.config
+	echo -e "\033[0;33mSetting mmsApiKey to \033[0m$2"
+	sed -i.bak -E "s/^mmsApiKey.+$/mmsApiKey=$2/" local.config
+	echo -e "\033[0;33mSetting mmsBaseUrl to \033[0m$3"
+	sed -i.bak -E "s/^mmsBaseUrl.+$/mmsBaseUrl=$(echo $3 | sed -E 's/\//\\\//g')/" local.config
+
+fi
 
 #kill old automation processes
 echo -e "\033[0;33mKilling any old automation processes\033[0m"
